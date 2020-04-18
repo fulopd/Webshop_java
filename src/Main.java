@@ -3,6 +3,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class Main {
 
@@ -68,12 +70,44 @@ public class Main {
 	public static void main(String[] args) {
 		List<Raktar> termekLista = termekLista();
 		List<Rendeles> rendelesLista = rendelesLista();
+		Map<String, Integer> hianycikk = new TreeMap<>();
 		
-		for (Rendeles rendeles : rendelesLista) {
-			System.out.println(rendeles);
+		//rendelesLista.forEach(System.out::println);
+		
+		for (Rendeles r : rendelesLista) {
+			boolean teljesitheto = true;
+			int sum = 0;
+			for (Termek t : r.getTermekek()) {
+				//DEBUG: Termekek:
+				//System.out.println("\t"+t);
+				for (Raktar raktar : termekLista) {					
+					if (raktar.getTermekkod().equals(t.getAzonosito())) {
+						//System.out.println(raktar.getTermekkod() +" " + raktar.getDb());
+						if (raktar.getDb()-t.getMennyiseg()>=0) {
+							raktar.setDb(raktar.getDb()-t.getMennyiseg());
+							sum += raktar.getAr() * t.getMennyiseg();
+						}else {
+							//DEBUG Nincs:
+							//System.out.println("Nincs már raktáron");
+							//DEBUG raktar:
+							//System.out.println(t.getAzonosito() + " " +(raktar.getDb() - t.getMennyiseg()*-1));
+							hianycikk.merge(t.getAzonosito(), (raktar.getDb()-t.getMennyiseg()*(-1)), Integer::sum);
+							teljesitheto = false;
+						}
+					}
+				}
+			}
+			//DEBUG M Rendeles:
+			//System.out.println(r.getDatum() +" " + r.getSzam() + " " + r.getEmail() +" " + teljesitheto + " ----> " + sum + "\n\n");
+			if (teljesitheto) {
+				System.out.println(r.getEmail() + " A rendelést két napon belül szállítjuk " + sum + "ft");
+			}else {
+				System.out.println(r.getEmail() + " A rendelést függõ állípotba került hamarosan értesítjük.");
+			}
 		}
 
-
+		System.out.println("4. feladat:");
+		hianycikk.forEach((k,v) -> System.out.println(k +";" + v));
 	}
 
 }
