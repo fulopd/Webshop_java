@@ -41,6 +41,11 @@ public class Rendeles {
 	public void setTermekek(List<Termek> termekek) {
 		this.termekek = termekek;
 	}
+
+	@Override
+	public String toString() {
+		return "Rendeles [datum=" + datum + ", szam=" + szam + ", email=" + email + ", termekek=" + termekek + "]";
+	}
 	
 	
 	
